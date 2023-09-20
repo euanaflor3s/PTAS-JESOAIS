@@ -70,23 +70,22 @@ const authenticatedUser = async (req, res) => {
     try {
         const isUserAuthenticated = await User.findOne({
             where: {
-                
+                email: email,
+                password: password
             }
         })
         const token = jwt.sign({
-            name: 
-            email: 
-        },
+            id: email},
             secret.secret, {
             expiresIn: 86400,
         })
         return res.json({
-            name: 
+            name: isUserAuthenticated.name,
             email: isUserAuthenticated.email,
             token: token
         });
     } catch (error) {
-        return res.json("");
+        return res.json("Usuário não encontrado");
     }
 }
 
