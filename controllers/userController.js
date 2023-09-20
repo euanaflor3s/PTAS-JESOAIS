@@ -6,19 +6,21 @@ const jwt = require('jsonwebtoken');
 const createUser = async (req, res) => {
     const { name, password, email } = req.body;
     await User.create({
-       
+       name: name,
+       password: password,
+       email: email
 
 
     }).then(() => {
-        res.json('         ');
-        console.log('           ');
+        res.json('Cadastro de usuário realizado com sucesso!');
+        console.log('Cadastro do usúario realizado com sucesso!');
     }).catch((erro) => {
-        res.json('             ');
-        console.log(`  : ${erro}`);
+        res.json('Deu erro');
+        console.log(`Deu erro: ${erro}`);
     })
 }
 const findUsers = async (req, res) => {
-    const     = await User.findAll();
+    const users = await User.findAll();
     try {
         res.json(    );
     } catch (error) {
@@ -34,18 +36,21 @@ const deleteUser = async (req, res) => {
                 
             }
         }).then(() => {
-            res.json("         ");
+            res.json("Usuário deletado com sucesso");
         })
     } catch (error) {
-        res.status(404).json("      ");
+        res.status(404).json("Deu erro");
     }
 }
 const updateUser = async (req, res) => {
     const id = parseInt(req.params.id);
-    const {       } = req.body;
+    const { name, password, email  } = req.body;
     try {
         await User.update(
             {
+                name: name,
+                password: password,
+                email: email
                
             },
             {
@@ -54,14 +59,14 @@ const updateUser = async (req, res) => {
                 }
             }
         ).then(() => {
-            res.json("            ");
+            res.json("Usuário alterado");
         })
     } catch (error) {
-        res.status(404).json("                !");
+        res.status(404).json("Deu erro!");
     }
 }
 const authenticatedUser = async (req, res) => {
-    const {       } = req.body;
+    const {email, password } = req.body;
     try {
         const isUserAuthenticated = await User.findOne({
             where: {
