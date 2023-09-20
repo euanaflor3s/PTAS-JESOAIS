@@ -1,4 +1,4 @@
-const connection = require('../config/connection');
+const db = require('../config/connection');
 
 const User = db.sequelize.define('users',{
     id: {
