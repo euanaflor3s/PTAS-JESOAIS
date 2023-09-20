@@ -2,13 +2,7 @@ const { Sequelize } = require('sequelize');
 const config = require('../config/config')
 require('dotenv').config();
 
-const sequelize = new Sequelize(  
-  "postgres://wgahajso:c9YemqzAKK5OIrxEUrdI5R4s09IDqwI1@motty.db.elephantsql.com/wgahajso" {
-    define: {
-      timestamps: true,
-      underscored: true,
-    },
-  });
+const sequelize = new Sequelize(config.development);
 
 try {
   sequelize.authenticate();
