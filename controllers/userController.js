@@ -72,13 +72,25 @@ const authenticatedUser = async (req, res) => {
             where: {
                 email: email,
                 password: password
+            },
+
+
+            if (isUserAuthenticated) {
+
+                     const token = jwt.sign({ id: email }, secret.secret, { expiresIn: 86400,
+
+                res.cookie('token', token, { httpOnly: true}).json ({
+                    name: isUserAuthenticated.name,
+                    email: isUserAuthenticated.email,
+                    token: token
+                })
+              
             }
-        })
-        const token = jwt.sign({
-            id: email},
-            secret.secret, {
-            expiresIn: 86400,
-        })
+        )
+    } 
+ });
+
+
         return res.json({
             name: isUserAuthenticated.name,
             email: isUserAuthenticated.email,
