@@ -70,12 +70,13 @@ const authenticatedUser = async (req, res) => {
     try {
         const isUserAuthenticated = await User.findOne({
             where: {
-                email: email,
-                password: password
+                email: email
             },
 
 
-            if (isUserAuthenticated) {
+            if (!isUserAuthenticated) {
+                return res.json("erro");//parte faltante
+            }
 
                      const token = jwt.sign({ id: email }, secret.secret, { expiresIn: 86400 });
                      res.cookie('token', token, { httpOnly: true}).json ({
