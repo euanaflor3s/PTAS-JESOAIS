@@ -1,13 +1,14 @@
 const User = require('../models/User');
-const secret = require('../config/auth.json');
 const jwt = require('jsonwebtoken');
-
+const bcrypt = require("bcryptjs");
+require('dotenv').config();
 
 const createUser = async (req, res) => {
     const { name, password, email } = req.body;
+    const newPassword = await bcrypt.hash(password, 10);
     await User.create({
        name: name,
-       password: password,
+       password: newPassword,
        email: email
 
 
@@ -22,7 +23,7 @@ const createUser = async (req, res) => {
 const findUsers = async (req, res) => {
     const users = await User.findAll();
     try {
-        res.json(    );
+        res.json(users);
     } catch (error) {
         res.status(404).json("Ocorreu um erro na busca!");
     };
@@ -33,7 +34,7 @@ const deleteUser = async (req, res) => {
     try {
         await User.destroy({
             where: {
-                
+                id: id
             }
         }).then(() => {
             res.json("Usuário deletado com sucesso");
@@ -45,11 +46,12 @@ const deleteUser = async (req, res) => {
 const updateUser = async (req, res) => {
     const id = parseInt(req.params.id);
     const { name, password, email  } = req.body;
+    const newPassword = await bcrypt.hash(password, 10);
     try {
         await User.update(
             {
                 name: name,
-                password: password,
+                password: newPassword,
                 email: email
                
             },
@@ -67,32 +69,26 @@ const updateUser = async (req, res) => {
 }
 const authenticatedUser = async (req, res) => {
     const {email, password } = req.body;
+    
     try {
         const isUserAuthenticated = await User.findOne({
-            where: {
-                email: email
-            },
+            where: { email } });
 
-
-            if (!isUserAuthenticated) {
-                return res.json("erro");//parte faltante
-            }
-
-                     const token = jwt.sign({ id: email }, secret.secret, { expiresIn: 86400 });
-                     res.cookie('token', token, { httpOnly: true}).json ({
-                        name: isUserAuthenticated.name,
-                        email: isUserAuthenticated.email,
-                        token: token
-                    })
-    } 
- });
-
-
-        return res.json({
-            name: isUserAuthenticated.name,
-            email: isUserAuthenticated.email,
-            token: token
-        });
+        if(!isUserAuthenticated){
+            return res.jso("não encontrado");
+        }
+        const isPasswordValidated = await bcrypt.compare(password, isUserAuthenticated.password);
+        if(isPasswordValidated){
+            const token = jwt.sign({ id: email }, process.env.SECRET, { expiresIn: 86400 });
+            
+            return res.cookie('token', token, { httpOnly: true}).json({
+                    name: isUserAuthenticated.name,
+                    email: isUserAuthenticated.email,
+                    token: token
+                });
+        }
+        
+        
     } catch (error) {
         return res.json("Usuário não encontrado");
     }
